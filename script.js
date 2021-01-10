@@ -1,4 +1,6 @@
 var scheduledHours = [];
+var m = moment();
+var currentTime = m.hour();
 
 //------Set time to top of page------
 var currentDay = $("#currentDay");
@@ -30,5 +32,22 @@ for (var hour = 7; hour < 20; hour++) {
               </div>
             </div>
           </div>`);
+}
+
+//Checks time and determines past, present, or future in textareas
+$.each($('.time-block'), function(index, value) {
+  let dateHour = $(value).attr('data-time');
+  if (Number(dateHour) === m.hour()) {
+    $(this).find('textarea').addClass('present');
+  } else if (Number(dateHour) < m.hour()) {
+    $(this).find('textarea').addClass('past').attr('disabled', 'disabled');
+    $(this).find('.save-button').addClass('disabled').attr('disabled', true);
+  } else {
+    $(this).find('textarea').addClass('future');
+  }
+});
+
+if (currentTime >=0 && currentTime < 7){
+  localStorage.clear();
 }
 
