@@ -1,4 +1,5 @@
 var scheduledHours = [];
+var availableHours = [];
 var m = moment();
 var currentTime = m.hour();
 
@@ -25,7 +26,7 @@ for (var hour = 7; hour < 20; hour++) {
                 <textarea class="form-control text-area"></textarea>
                 <!--save button-->
                 <div class='input-group-append'>
-                  <button class='save-button d-flex justify-center align-center'>
+                  <button class='saveBtn d-flex justify-center align-center'>
                     <i class='far fa-save fa-2x save-icon'></i>
                   </button>
                 </div>
@@ -38,16 +39,115 @@ for (var hour = 7; hour < 20; hour++) {
 $.each($('.time-block'), function(index, value) {
   let dateHour = $(value).attr('data-time');
   if (Number(dateHour) === m.hour()) {
-    $(this).find('textarea').addClass('present');
+    $(this)
+      .find('textarea')
+      .addClass('present');
   } else if (Number(dateHour) < m.hour()) {
-    $(this).find('textarea').addClass('past').attr('disabled', 'disabled');
-    $(this).find('.save-button').addClass('disabled').attr('disabled', true);
+    $(this)
+      .find('textarea')
+      .addClass('past')
+      .attr('disabled', 'disabled');
+    $(this)
+      .find('.saveBtn')
+      .addClass('disabled')
+      .attr('disabled', true);
   } else {
-    $(this).find('textarea').addClass('future');
+    $(this)
+      .find('textarea')
+      .addClass('future');
   }
 });
 
+//Clears local storage if current time is outside of 7am-7pm
 if (currentTime >=0 && currentTime < 7){
   localStorage.clear();
 }
+
+//Check  local storage to set value to availableHours
+if (localStorage.getItem('availableHours')) {
+  availableHours = JSON.parse(localStorage.getItem('availableHours'));
+} else {
+  availableHours = {
+    '7': {
+      time: '7',
+      value: ''
+    },
+    '8': {
+      time: '8',
+      value: ''
+    },
+    '9': {
+      time: '9',
+      value: ''
+    },
+    '10': {
+      time: '10',
+      value: ''
+    },
+    '11': {
+      time: '11',
+      value: ''
+    },
+    '12': {
+      time: '12',
+      value: ''
+    },
+    '13': {
+      time: '13',
+      value: ''
+    },
+    '14': {
+      time: '14',
+      value: ''
+    },
+    '15': {
+      time: '15',
+      value: ''
+    },
+    '16': {
+      time: '16',
+      value: ''
+    },
+    '17': {
+      time: '17',
+      value: ''
+    },
+    '18': {
+      time: '18',
+      value: ''
+    },
+    '19': {
+      time: '19',
+      value: ''
+    },
+    
+  };
+}
+
+//available hours set to equal user input relative to each row
+$('.time-block').each(function() {
+  $(this)
+    .find('.text-area')
+    .val(availableHours[$(this).attr('data-time')].value);
+});
+
+//on click saves user input to local storage
+$('.saveBtn').on('click', function(event){
+  event.preventDefault();
+
+  //set availableHours time attribute
+  var timeValue = $(this)
+                    .closest('.time-block')
+                    .attr('data-time');
+
+  //set availableHours value attribute
+    var textValue = $(this)
+                      .closest('.time-block')
+                      .find('.text-area').val();
+                      
+    availableHours[timeValue].value = textValue;
+
+  //save user input in each object to local storage
+    localStorage.setItem('availableHours', JSON.stringify(availableHours));
+});
 
